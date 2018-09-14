@@ -1,0 +1,8 @@
+datasets
+.idea
+samples
+__pycache__
+venv/
+models/
+samples/
+face_data.zip
