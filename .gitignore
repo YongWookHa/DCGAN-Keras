@@ -6,3 +6,4 @@ venv/
 models/
 samples/
 face_data.zip
+haarcascade_frontalface_default.xml
