@@ -73,10 +73,6 @@ class DCGAN():
 
         make_trainable(self.discriminator, False)
 
-        # High res. and low res. images
-        img_hr = Input(shape=(224, 224, self.channels))
-        img_lr = Input(shape=self.lr_shape)
-
         z = Input(shape=(self.latent_dim,))
         fake_lr = self.generator(z)
 
@@ -93,9 +89,6 @@ class DCGAN():
         self.combined.compile(loss=['binary_crossentropy', 'ssim'],
                               loss_weights=[1e-2, 1],
                               optimizer=optimizer)
-
-        self.dLosses = []
-        self.gLosses = []
 
 
     def build_generator(self):
@@ -183,17 +176,17 @@ class DCGAN():
                 # ------------------
                 #  Train Generator
                 # ------------------
-                imgs_hr, imgs_lr = self.data_loader.load_data(batch_size)
+                ref_imgs = self.data_loader.load_data(batch_size)
 
                 noise = np.random.normal(0, 1, (batch_size, self.latent_dim))
                 gen_imgs = self.generator.predict(noise)
                 make_trainable(self.discriminator, True)
-                d_loss_real = self.discriminator.train_on_batch(imgs_lr, valid*0.9)  # label smoothing
+                d_loss_real = self.discriminator.train_on_batch(ref_imgs, valid*0.9)  # label smoothing
                 d_loss_fake = self.discriminator.train_on_batch(gen_imgs, fake)
                 d_loss = 0.5 * np.add(d_loss_real, d_loss_fake)
 
                 make_trainable(self.discriminator, False)
-                image_features = self.vgg.predict(imgs_lr)
+                image_features = self.vgg.predict(ref_imgs)
 
                 if iter % (sample_interval/10) == 0:
                     tensorboard = TensorBoard('./logs/%s' % self.time)
