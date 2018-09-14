@@ -127,7 +127,7 @@ class DCGAN():
 
         inp = Input(shape=(None, None, self.channels))
         try:
-            img = Lambda(lambda image: K.tf.image.resize_images(image, (224, 224)))(inp)
+            img = Lambda(lambda image: K.tf.image.resize_images(image, (224, 224)))(inp) # to meet the input image size of vgg net
         except:
             img = Lambda(lambda image: K.tf.image.resize_images(image, 224, 224))(inp)
 
