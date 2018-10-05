@@ -150,9 +150,13 @@ class DCGAN():
         # Input img = generated image
         d0 = Input(shape=self.lr_shape)
 
-        d = d_block(d0, self.df, strides=2, bn=False)
+        d = d_block(d0, self.df, strides=1, bn=False)
+        d = d_block(d, self.df, strides=2)
+        d = d_block(d, self.df*2, strides=1)
         d = d_block(d, self.df*2, strides=2)
+        d = d_block(d, self.df*4, strides=1)
         d = d_block(d, self.df*4, strides=2)
+        d = d_block(d, self.df*8, strides=1)
         d = d_block(d, self.df*8, strides=2)
 
         d = Dense(self.df*16)(d)
