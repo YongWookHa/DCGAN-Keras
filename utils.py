@@ -60,21 +60,20 @@ class DataLoader():
 
         batch_images = np.random.choice(path, size=batch_size)
 
-        ref_imgs = []
+        imgs = []
         for img_path in batch_images:
             img = self.imread(img_path)
             h, w = self.img_res
-            img = imresize(img, self.img_res)  # for using vgg network
 
             # If training => do random flip
             if not is_testing and np.random.random() < 0.5:
                 img = np.fliplr(img)
 
-            ref_imgs.append(img)
+            imgs.append(img)
 
-        ref_imgs = np.array(ref_imgs) / 127.5 - 1.
+        imgs = np.array(imgs) / 127.5 - 1.
 
-        return ref_imgs
+        return imgs
 
     def imread(self, path):
         return imread(path, mode='RGB').astype(np.float)
