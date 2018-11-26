@@ -21,14 +21,14 @@ class DCGAN():
     def __init__(self):
         # Input shape
         self.channels = 3
-        self.img_height = 128
-        self.img_width = 128
+        self.img_height = 64
+        self.img_width = 64
         self.img_shape = (self.img_height, self.img_width, self.channels)
         self.latent_dim = 100
         self.time = time()
         self.dataset_name = 'celebA'
 
-        optimizer = Adam(1e-5)
+        optimizer = Adam(2e-4, beta_1=0.5)
 
         # Configure data loader
         self.data_loader = DataLoader(dataset_name=self.dataset_name,
