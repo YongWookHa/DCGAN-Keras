@@ -27,17 +27,21 @@ class DCGAN():
         self.latent_dim = 100
         self.time = time()
         self.dataset_name = 'celebA'
+        self.learning_rate = 2e-5
+        self.patial_linear = False
 
-        optimizer = Adam(2e-4, beta_1=0.5)
+        # Number of filters in the first layer of G and D
+        self.gf = 32
+        self.df = 32
+
+        optimizer = Adam(self.learning_rate, beta_1=0.5)
 
         # Configure data loader
         self.data_loader = DataLoader(dataset_name=self.dataset_name,
                                       img_res=(self.img_height, self.img_width))
         self.n_data = self.data_loader.get_n_data()
 
-        # Number of filters in the first layer of G and D
-        self.gf = 32
-        self.df = 32
+
 
         self.generator = self.build_generator()
         print("---------------------generator summary----------------------------")
@@ -85,10 +89,9 @@ class DCGAN():
             u = Activation('relu')(u)
             return u
 
-        generator = Dense(4*4*self.gf*16, activation="relu")(noise)
-        generator = Reshape((4, 4, self.gf*16))(generator)
+        generator = Dense(2 * self.gf * self.img_height // 8 * self.img_width // 8, activation="relu")(noise)
+        generator = Reshape((self.img_height // 16, self.img_width // 16, self.gf * 8))(generator)
         generator = BatchNormalization(momentum=0.8)(generator)
-        generator = deconv2d(generator, filters=self.gf*16, kernel_size=(5, 5), strides=(2, 2))
         generator = deconv2d(generator, filters=self.gf*8, kernel_size=(5, 5), strides=(2, 2))
         generator = deconv2d(generator, filters=self.gf*4, kernel_size=(5, 5), strides=(2, 2))
         generator = deconv2d(generator, filters=self.gf*2, kernel_size=(5, 5), strides=(2, 2))
@@ -112,17 +115,11 @@ class DCGAN():
         # Input img = generated image
         d0 = Input(shape=self.img_shape)
 
-        d = d_block(d0, self.df, strides=1, bn=False)
-        d = d_block(d, self.df, strides=2)
-        d = d_block(d, self.df*2, strides=1)
+        d = d_block(d0, self.df, strides=2, bn=False)
         d = d_block(d, self.df*2, strides=2)
-        d = d_block(d, self.df*4, strides=1)
         d = d_block(d, self.df*4, strides=2)
-        d = d_block(d, self.df*8, strides=1)
         d = d_block(d, self.df*8, strides=2)
 
-        d = Dense(self.df*16)(d)
-        d = LeakyReLU(alpha=0.2)(d)
         d = Flatten()(d)
         validity = Dense(1, activation='sigmoid')(d)
 
@@ -142,6 +139,8 @@ class DCGAN():
             f.write(self.generator.to_json())
         print("\nbatch size : %d | num_data : %d | max iteration : %d \n" % (batch_size, self.n_data, max_iter))
         for epoch in range(1, epochs+1):
+            if self.patial_linear:
+                self.generator.optimizer = Adam(self.learning_rate / (epoch//10 + 1))
             for iter in range(max_iter):
                 # ------------------
                 #  Train Generator
@@ -196,4 +195,4 @@ if __name__ == '__main__':
         gan.n_data = 50
         gan.train(epochs=2, batch_size=1, sample_interval=10)
     else:
-        gan.train(epochs=100, batch_size=32, sample_interval=400)
+        gan.train(epochs=30, batch_size=64, sample_interval=200)
