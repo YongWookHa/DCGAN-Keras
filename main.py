@@ -142,6 +142,8 @@ class DCGAN():
             f.write(self.generator.to_json())
         print("\nbatch size : %d | num_data : %d | max iteration : %d | time : %s \n" % (batch_size, self.n_data, max_iter, self.time))
         for epoch in range(1, epochs+1):
+            if self.patial_linear:
+                self.generator.optimizer = Adam(self.learning_rate / (epoch//10 + 1))
             for iter in range(max_iter):
                 # ------------------
                 #  Train Generator

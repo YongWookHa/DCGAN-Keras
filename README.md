@@ -16,16 +16,20 @@ You can run this model with [celebA dataset](http://mmlab.ie.cuhk.edu.hk/project
 ## Usage
 Before you run the model, make directories below.
 * `datasets` : put your dataset in this folder
-* `logs` : checkpoints are going to be saved here.
-* `models` : model architecture and weights are going to be saved here.
+* `logs` : checkpoints are going to be saved here
+* `models` : model architecture and weights are going to be saved here
 
-You need to edit some hyper parameters in line 23-29 of `main.py`
-When you put your own data to `datasets` folder, clarify the resolution of image data by making another folder `*by*`.
-> ex) `datasets/CelebA/128by128/*.jpg`
+---
 
-If you don't want to use 128x128 resolution but other, you'd better change the model a bit. If you have any problem to adjust the model to your own data, don't hesitate to *open issue*.
+### main.py
+You need to edit some hyper parameters in line 23-29 of `main.py`.
+When you put your own data to `datasets` folder, clarify the resolution of image data by making another folder `*by*`. 
+*ex)* `datasets/CelebA/128by128/*.jpg`
 
-> You need to add code below to `losses.py` file to use [PSNR](https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio) as loss function.
+> If you don't want to use 128x128 resolution but other, you'd better change the model a bit. If you have any problem to adjust the model to your own data, don't hesitate to *open issue*.
+
+
+You need to add code below to `losses.py` file to use [PSNR](https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio) as loss function.
 ~~~
 def tf_log10(x):
   numerator = tf.log(x)
@@ -38,7 +42,18 @@ def psnr(y_true, y_pred):
     return 100 - 10.0 * tf_log10((max_pixel ** 2) / (K.mean(K.square(y_pred - y_true))))
 ~~~
 
-## Sample of result
+### utils.py
+You can crop faces from CelebA dataset with `util.py`. (the image file in CelebA should be `jpg`)
 
+Import this file from console and call `crop_face` function.
+
+The function has 4 parameters.
+* `dataPath` : path of face images
+* `savePath` : path to save the cropped image
+* `target_size` : need to be tuple *ex) (128, 128)*
+* `cascPath` : haar-cascade xml file path
+
+## Sample of result
+* after 10 epoch <br/>
 ![e10-i4800](https://user-images.githubusercontent.com/12293076/45536899-c1476e80-b83d-11e8-85fe-7e3295a41d27.png)
 
