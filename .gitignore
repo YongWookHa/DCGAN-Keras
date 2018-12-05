@@ -1,6 +1,7 @@
 datasets
 .idea
 samples
+logs
 __pycache__
 venv/
 models/
