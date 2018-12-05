@@ -22,17 +22,17 @@ class DCGAN():
         self.img_size = 64
         self.latent_dim = 100
         self.time = time()
-        self.dataset_name = 'mix_55_'
+        self.dataset_name = 'vdsr'
         self.learning_rate = 1e-4
 
-        optimizer = Adam(self.learning_rate, beta_1=0.5, decay=0.0001)
+        optimizer = Adam(self.learning_rate, beta_1=0.5, decay=0.00005)
 
         self.gf = 64 # filter size of generator's last layer
         self.df = 64 # filter size of discriminator's first layer
 
         # Configure data loader
         self.data_loader = DataLoader(dataset_name=self.dataset_name,
-                                      img_res=(self.img_size, self.img_size))
+                                      img_res=(self.img_size, self.img_size), mem_load=True)
         self.n_data = self.data_loader.get_n_data()
 
 
@@ -73,7 +73,7 @@ class DCGAN():
     def build_generator(self):
         noise = Input(shape=(self.latent_dim,))
 
-        def deconv2d(layer_input, filters=256, kernel_size=(4, 4), strides=(2, 2), bn_relu=True):
+        def deconv2d(layer_input, filters=256, kernel_size=(5, 5), strides=(2, 2), bn_relu=True):
             """Layers used during upsampling"""
             # u = UpSampling2D(size=2)(layer_input)
             u = Conv2DTranspose(filters, kernel_size=kernel_size, strides=strides, padding='same')(layer_input)
@@ -142,8 +142,6 @@ class DCGAN():
             f.write(self.generator.to_json())
         print("\nbatch size : %d | num_data : %d | max iteration : %d | time : %s \n" % (batch_size, self.n_data, max_iter, self.time))
         for epoch in range(1, epochs+1):
-            if self.patial_linear:
-                self.generator.optimizer = Adam(self.learning_rate / (epoch//10 + 1))
             for iter in range(max_iter):
                 # ------------------
                 #  Train Generator
@@ -197,4 +195,4 @@ if __name__ == '__main__':
         gan.n_data = 50
         gan.train(epochs=2, batch_size=1, sample_interval=10)
     else:
-        gan.train(epochs=20, batch_size=64, sample_interval=400)
+        gan.train(epochs=10, batch_size=64, sample_interval=200)
