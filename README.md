@@ -45,13 +45,20 @@ def psnr(y_true, y_pred):
 ### utils.py
 You can crop faces from CelebA dataset with `util.py`. (the image file in CelebA should be `jpg`)
 
-Import this file from console and call `crop_face` function.
+Import this file to console and call `crop_face` function.
 
 The function has 4 parameters.
 * `dataPath` : path of face images
 * `savePath` : path to save the cropped image
 * `target_size` : need to be tuple *ex) (128, 128)*
 * `cascPath` : haar-cascade xml file path
+
+The base code of class `DataLoader` is from (eriklindernoren/Keras-GAN)[https://github.com/eriklindernoren/Keras-GAN].
+I recommend to visit his repo, because there are so many good example code for GAN. :)
+
+Anyway, there are two ways to load data with `DataLoader`.
+* Load all the data into RAM. : this would be way faster when you have enough RAM.
+* Randomly picked image data from the designated directory. : though it's slower, this way doesn't need much RAM space.
 
 ## Sample of result
 * after 10 epoch <br/>
