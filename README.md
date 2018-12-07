@@ -28,20 +28,6 @@ When you put your own data to `datasets` folder, clarify the resolution of image
 
 > If you don't want to use 128x128 resolution but other, you'd better change the model a bit. If you have any problem to adjust the model to your own data, don't hesitate to *open issue*.
 
-
-You need to add code below to `losses.py` file to use [PSNR](https://en.wikipedia.org/wiki/Peak_signal-to-noise_ratio) as loss function.
-~~~
-def tf_log10(x):
-  numerator = tf.log(x)
-  denominator = tf.log(tf.constant(10, dtype=numerator.dtype))
-  return numerator / denominator
-~~~
-~~~
-def psnr(y_true, y_pred):
-    max_pixel = 1.0
-    return 100 - 10.0 * tf_log10((max_pixel ** 2) / (K.mean(K.square(y_pred - y_true))))
-~~~
-
 ### utils.py
 You can crop faces from CelebA dataset with `util.py`. (the image file in CelebA should be `jpg`)
 
